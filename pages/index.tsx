@@ -4,29 +4,34 @@ import { useEffect } from 'react';
 import { config } from '../config';
 import type { NextPage } from 'next'
 import styles from '../styles/Home.module.css'
-import socketIOClient from 'socket.io-client';
+import socketIOClient, { Socket } from 'socket.io-client';
 import { generateUsername } from 'username-generator';
 
+// console.log("config.ENDPOINT!", config.ENDPOINT!);
 
-const socket = socketIOClient(config.ENDPOINT!);
+
+let socket: Socket;
 
 const Home: NextPage = () => {
 
   useEffect(() => {
-    // console.log("Called");
+    socket = socketIOClient(config.ENDPOINT!);
+  }, []);
+
+  useEffect(() => {
+
+    console.log("Called");
 
     socket.emit("CONNECT_USER", { data: generateUsername() });
 
-    socket.on("DEVICE_DATA", ({ data }) => {
+    socket.on("DEVICE_DATA", ({ data }: any) => {
       console.log(data);
     });
 
-    socket.on("LEAVE_USER", (user) => {
+    socket.on("LEAVE_USER", (user: any) => {
       console.log(user);
     });
-
-
-  }, [socket]);
+  }, [socket])
 
   return (
     <div className={styles.container}>
